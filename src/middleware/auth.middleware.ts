@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import User from '../models/user.model';
 
 // Extend the Request type to include the user property
-interface AuthRequest extends Request {
+export interface AuthRequest extends Request {
   user?: any;
 }
 
