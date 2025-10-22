@@ -1,6 +1,15 @@
-import mongoose from 'mongoose';
+import mongoose, { Document, Model, HookNextFunction } from 'mongoose';
 import bcrypt from 'bcryptjs';
-import { HookNextFunction } from 'mongoose';
+
+// 1. Define an interface for the User's properties
+export interface IUser extends Document {
+  name: string;
+  email: string;
+  password: string;
+  role: 'student' | 'staff' | 'admin';
+  // 2. Define the custom method's signature here
+  matchPassword(enteredPassword: string): Promise<boolean>;
+}
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -9,8 +18,7 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ['student', 'staff', 'admin'], default: 'student' }
 }, { timestamps: true });
 
-// Hash password before saving the user model
-userSchema.pre('save', async function (next: HookNextFunction) {
+userSchema.pre<IUser>('save', async function (next) {
   if (!this.isModified('password')) {
     return next();
   }
@@ -18,10 +26,11 @@ userSchema.pre('save', async function (next: HookNextFunction) {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Method to compare entered password with hashed password
-userSchema.methods.matchPassword = async function (enteredPassword) {
+// This function now uses the interface
+userSchema.methods.matchPassword = async function (enteredPassword: string) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-const User = mongoose.model('User', userSchema);
+// 3. Associate the interface with the model
+const User: Model<IUser> = mongoose.model<IUser>('User', userSchema);
 export default User;

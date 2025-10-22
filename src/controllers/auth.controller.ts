@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import User from '../models/user.model';
 import jwt from 'jsonwebtoken';
+import User, { IUser } from '../models/user.model'; 
 
 const generateToken = (id: string) => {
   return jwt.sign({ id }, process.env.JWT_SECRET!, {
@@ -35,7 +36,7 @@ export const registerUser = async (req: Request, res: Response) => {
 export const loginUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   
-  const user = await User.findOne({ email });
+  const user: IUser | null = await User.findOne({ email });
 
   if (user && (await user.matchPassword(password))) {
     res.json({
