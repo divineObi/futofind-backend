@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import Notification from '../models/notification.model';
-import { AuthRequest } from '../middleware/auth.middleware';
+import { type AuthRequest } from '../middleware/auth.middleware';
 
 // Get all notifications for the logged-in user, sorted newest first
 export const getNotifications = async (req: AuthRequest, res: Response) => {

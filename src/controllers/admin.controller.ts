@@ -2,7 +2,7 @@ import { Response } from 'express';
 import Claim from '../models/claim.model';
 import Item from '../models/item.model';
 import Notification from '../models/notification.model'; // Ensure Notification is imported
-import { AuthRequest } from '../middleware/auth.middleware';
+import { type AuthRequest } from '../middleware/auth.middleware';
 import { sendEmail } from '../utils/sendEmail';
 
 export const getPendingClaims = async (req: AuthRequest, res: Response) => {

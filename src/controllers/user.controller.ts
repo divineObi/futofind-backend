@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import Item from '../models/item.model';
 import Claim from '../models/claim.model';
-import { AuthRequest } from '../middleware/auth.middleware';
+import { type AuthRequest } from '../middleware/auth.middleware';
 
 // Get all items reported BY the logged-in user
 export const getMyReportedItems = async (req: AuthRequest, res: Response) => {

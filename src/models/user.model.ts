@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import { HookNextFunction } from 'mongoose';
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -9,7 +10,7 @@ const userSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Hash password before saving the user model
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function (next: HookNextFunction) {
   if (!this.isModified('password')) {
     return next();
   }

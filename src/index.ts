@@ -3,6 +3,7 @@ dotenv.config();
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
+import { Request, Response } from 'express';
 
 // Import routes
 import authRoutes from './routes/auth.routes';
@@ -38,7 +39,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/notifications', notificationRoutes);
 
 // Test route
-app.get('/', (req, res) => {
+app.get('/', (req: Request, res: Response) => {
   res.send('FutoFind API is running...');
 });
 

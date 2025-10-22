@@ -2,7 +2,7 @@ import { Response } from 'express';
 import Item from '../models/item.model';
 import Claim from '../models/claim.model';
 import Notification from '../models/notification.model';
-import { AuthRequest } from '../middleware/auth.middleware';
+import { type AuthRequest } from '../middleware/auth.middleware';
 import { sendEmail } from '../utils/sendEmail';
 
 // --- NEW NOTIFICATIONS ADDED ---
