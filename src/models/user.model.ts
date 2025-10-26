@@ -1,14 +1,12 @@
 import mongoose, { Document, Model } from 'mongoose'; // <-- 1. Remove HookNextFunction
 import bcrypt from 'bcryptjs';
-import { NextFunction } from 'express'; 
 
-// 1. Define an interface for the User's properties
+
 export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
   role: 'student' | 'staff' | 'admin';
-  // 2. Define the custom method's signature here
   matchPassword(enteredPassword: string): Promise<boolean>;
 }
 
@@ -19,7 +17,7 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ['student', 'staff', 'admin'], default: 'student' }
 }, { timestamps: true });
 
-userSchema.pre<IUser>('save', async function (next: NextFunction) {
+userSchema.pre<IUser>('save', async function (next) {
   if (!this.isModified('password')) {
     return next();
   }
