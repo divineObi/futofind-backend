@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import User from '../models/user.model';
 import jwt from 'jsonwebtoken';
 import User, { IUser } from '../models/user.model'; 
 
@@ -36,7 +35,7 @@ export const registerUser = async (req: Request, res: Response) => {
 export const loginUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   
-  const user: IUser | null = await User.findOne({ email });
+  const user = await User.findOne({ email }) as IUser | null;
 
   if (user && (await user.matchPassword(password))) {
     res.json({

@@ -1,5 +1,6 @@
-import mongoose, { Document, Model, HookNextFunction } from 'mongoose';
+import mongoose, { Document, Model } from 'mongoose'; // <-- 1. Remove HookNextFunction
 import bcrypt from 'bcryptjs';
+import { NextFunction } from 'express'; 
 
 // 1. Define an interface for the User's properties
 export interface IUser extends Document {
@@ -18,7 +19,7 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ['student', 'staff', 'admin'], default: 'student' }
 }, { timestamps: true });
 
-userSchema.pre<IUser>('save', async function (next) {
+userSchema.pre<IUser>('save', async function (next: NextFunction) {
   if (!this.isModified('password')) {
     return next();
   }
