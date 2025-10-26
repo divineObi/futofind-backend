@@ -18,17 +18,20 @@ export const registerUser = async (req: Request, res: Response) => {
     return res.status(400).json({ message: 'User already exists' });
   }
 
-  // Explicitly type the created user
-  const user: IUser = await User.create({ name, email, password, role });
+  const user = await User.create({ name, email, password, role });
 
-  if (user) {
-    // TypeScript now knows user._id is valid
+  // --- THIS IS THE BULLETPROOF FIX ---
+  // We will cast the returned 'user' object explicitly to our IUser interface.
+  const createdUser = user as IUser;
+
+  if (createdUser) {
+    // TypeScript will now know that createdUser._id is valid.
     res.status(201).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      token: generateToken(user._id.toString()),
+      _id: createdUser._id,
+      name: createdUser.name,
+      email: createdUser.email,
+      role: createdUser.role,
+      token: generateToken(createdUser._id.toString()),
     });
   } else {
     res.status(400).json({ message: 'Invalid user data' });
@@ -38,11 +41,11 @@ export const registerUser = async (req: Request, res: Response) => {
 export const loginUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   
-  // Explicitly type the found user
-  const user: IUser | null = await User.findOne({ email });
+  // Find the user, explicitly casting to our interface or null.
+  const user = await User.findOne({ email }) as (IUser | null);
 
   if (user && (await user.matchPassword(password))) {
-    // TypeScript now knows user._id is valid
+    // TypeScript now knows that user._id is valid.
     res.json({
       _id: user._id,
       name: user.name,
