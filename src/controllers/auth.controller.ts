@@ -18,20 +18,20 @@ export const registerUser = async (req: Request, res: Response) => {
     return res.status(400).json({ message: 'User already exists' });
   }
 
-  const user = await User.create({ name, email, password, role });
+  const userDocument = await User.create({ name, email, password, role });
 
-  // --- THIS IS THE BULLETPROOF FIX ---
-  // We will cast the returned 'user' object explicitly to our IUser interface.
-  const createdUser = user as IUser;
+  if (userDocument) {
+    // --- THIS IS THE BRUTE FORCE FIX ---
+    // Convert the complex Mongoose document into a plain JavaScript object.
+    const userObject = userDocument.toObject();
 
-  if (createdUser) {
-    // TypeScript will now know that createdUser._id is valid.
+    // Now, we are accessing a property on a simple object, not a Mongoose proxy.
     res.status(201).json({
-      _id: createdUser._id,
-      name: createdUser.name,
-      email: createdUser.email,
-      role: createdUser.role,
-      token: generateToken(createdUser._id.toString()),
+      _id: userObject._id,
+      name: userObject.name,
+      email: userObject.email,
+      role: userObject.role,
+      token: generateToken(userObject._id.toString()),
     });
   } else {
     res.status(400).json({ message: 'Invalid user data' });
@@ -41,17 +41,19 @@ export const registerUser = async (req: Request, res: Response) => {
 export const loginUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   
-  // Find the user, explicitly casting to our interface or null.
-  const user = await User.findOne({ email }) as (IUser | null);
+  const user = await User.findOne({ email });
 
   if (user && (await user.matchPassword(password))) {
-    // TypeScript now knows that user._id is valid.
+    // --- APPLYING THE SAME FIX HERE ---
+    // Convert the Mongoose document to a plain object before sending.
+    const userObject = user.toObject();
+
     res.json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      token: generateToken(user._id.toString()),
+      _id: userObject._id,
+      name: userObject.name,
+      email: userObject.email,
+      role: userObject.role,
+      token: generateToken(userObject._id.toString()),
     });
   } else {
     res.status(401).json({ message: 'Invalid email or password' });
