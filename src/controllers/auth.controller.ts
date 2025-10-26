@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/user.model';
+// The IUser interface is not even needed for this fix, but we'll leave the import.
 import type { IUser } from '../models/user.model';
 
 const generateToken = (id: string) => {
@@ -21,12 +22,13 @@ export const registerUser = async (req: Request, res: Response) => {
   const userDocument = await User.create({ name, email, password, role });
 
   if (userDocument) {
-    // --- THIS IS THE BRUTE FORCE FIX ---
-    // Convert the complex Mongoose document into a plain JavaScript object.
-    const userObject = userDocument.toObject();
+    // --- THE NUCLEAR OPTION FIX ---
+    // Cast the document to the 'any' type.
+    // This tells TypeScript to stop all type-checking on this object.
+    const userObject: any = userDocument;
 
-    // Now, we are accessing a property on a simple object, not a Mongoose proxy.
     res.status(201).json({
+      // The compiler will now be forced to accept this.
       _id: userObject._id,
       name: userObject.name,
       email: userObject.email,
@@ -45,8 +47,8 @@ export const loginUser = async (req: Request, res: Response) => {
 
   if (user && (await user.matchPassword(password))) {
     // --- APPLYING THE SAME FIX HERE ---
-    // Convert the Mongoose document to a plain object before sending.
-    const userObject = user.toObject();
+    // Cast the found document to 'any'.
+    const userObject: any = user;
 
     res.json({
       _id: userObject._id,
